@@ -23,3 +23,15 @@ def studentsView(request):
 
         print(serializer.errors)  # show what went wrong (for debugging)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # send error response
+
+@api_view(['GET'])  # this view only accepts GET requests
+def studentDetailView(request, pk):  # pk = primary key (id of the student we want)
+    try:
+        student = students.objects.get(pk=pk)  # try to find a single student with this id
+
+    except students.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)  # if no such student exists, send 404 (not found)
+
+    if request.method == 'GET':
+        serializer = StudentsSerializer(student)  # convert single student object to JSON (no many=True since it's just one)
+        return Response(serializer.data, status=status.HTTP_200_OK)  # send that student's data back with 200 OK
