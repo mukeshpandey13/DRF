@@ -49,3 +49,15 @@ def studentDetailView(request, pk):  # pk = primary key (id of the student we wa
         # DELETE = remove the student
         student.delete()  # delete this student from database
         return Response(status=status.HTTP_204_NO_CONTENT)  # success, but no data to send back
+
+
+# for class base view
+from rest_framework.views import APIView  # base class for class-based API views
+from employees.models import Employee  # the Employee model (database table)
+from .serializers import EmployeeSerializer  # converts Employee data to/from JSON
+
+class Employees(APIView):  # class-based view (alternative to @api_view function-based views)
+    def get(self, request):  # handles GET requests (no need for if/elif method checks!)
+        employees = Employee.objects.all()  # get all employees from database
+        serializer = EmployeeSerializer(employees, many=True)  # convert list of employees to JSON
+        return Response(serializer.data, status=status.HTTP_200_OK)  # send JSON back with 200 OK
