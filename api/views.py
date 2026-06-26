@@ -68,3 +68,18 @@ class Employees(APIView):  # class-based view (alternative to @api_view function
             serializer.save()  # save new employee to database
             return Response(serializer.data, status=status.HTTP_201_CREATED)  # success response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # send error response
+
+
+from django.http import Http404
+
+class EmployeeDetails(APIView):
+    def get_object(self, pk):
+        try:
+            return Employee.objects.get(pk = pk)
+        except Employee.DoesNotExist:
+            raise Http404
+        
+    def get(self, request, pk):
+        employee = self.get_object(pk)
+        serializer = EmployeeSerializer(employee)
+        return Response(serializer.data, status=status.HTTP_200_OK)

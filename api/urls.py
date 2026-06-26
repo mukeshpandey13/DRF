@@ -7,4 +7,5 @@ urlpatterns = [
 
         # .as_view used for class base view
         path('employees/', views.Employees.as_view()),
+        path('employees/<int:pk>/',views.EmployeeDetails.as_view()),
 ]
