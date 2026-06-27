@@ -52,34 +52,68 @@ def studentDetailView(request, pk):  # pk = primary key (id of the student we wa
 
 
 # class base view
-from rest_framework.views import APIView  # base class for class-based API views
-from employees.models import Employee  # the Employee model (database table)
-from .serializers import EmployeeSerializer  # converts Employee data to/from JSON
+# from rest_framework.views import APIView  # base class for class-based API views
+# from employees.models import Employee  # the Employee model (database table)
+# from .serializers import EmployeeSerializer  # converts Employee data to/from JSON
 
-class Employees(APIView):  # class-based view (alternative to @api_view function-based views)
-    def get(self, request):  # handles GET requests (no need for if/elif method checks!)
-        employees = Employee.objects.all()  # get all employees from database
-        serializer = EmployeeSerializer(employees, many=True)  # convert list of employees to JSON
-        return Response(serializer.data, status=status.HTTP_200_OK)  # send JSON back with 200 OK
+# class Employees(APIView):  # class-based view (alternative to @api_view function-based views)
+#     def get(self, request):  # handles GET requests (no need for if/elif method checks!)
+#         employees = Employee.objects.all()  # get all employees from database
+#         serializer = EmployeeSerializer(employees, many=True)  # convert list of employees to JSON
+#         return Response(serializer.data, status=status.HTTP_200_OK)  # send JSON back with 200 OK
 
-    def post(self, request):  # handles POST requests (called automatically when a POST hits this URL)
-        serializer = EmployeeSerializer(data=request.data)  # load incoming data into serializer
-        if serializer.is_valid():  # check if data is correct/complete
-            serializer.save()  # save new employee to database
-            return Response(serializer.data, status=status.HTTP_201_CREATED)  # success response
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # send error response
+#     def post(self, request):  # handles POST requests (called automatically when a POST hits this URL)
+#         serializer = EmployeeSerializer(data=request.data)  # load incoming data into serializer
+#         if serializer.is_valid():  # check if data is correct/complete
+#             serializer.save()  # save new employee to database
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)  # success response
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # send error response
+
+# from django.http import Http404  # built-in exception that returns a 404 page/response
+
+# class EmployeeDetails(APIView):
+
+#     def get_object(self, pk):  # helper method - reused by get/put/delete below
+#         try:
+#             return Employee.objects.get(pk=pk)  # try to find employee with this id
+#         except Employee.DoesNotExist:
+#             raise Http404  # if not found, raise 404 (DRF automatically converts this to a proper 404 response)
+
+#     def get(self, request, pk):  # handles GET request - view single employee
+#         employee = self.get_object(pk)  # reuse helper to fetch employee
+#         serializer = EmployeeSerializer(employee)  # convert to JSON
+#         return Response(serializer.data, status=status.HTTP_200_OK)  # send data back
+
+#     def put(self, request, pk):  # handles PUT request - update employee
+#         employee = self.get_object(pk)  # reuse helper to fetch employee
+#         serializer = EmployeeSerializer(employee, data=request.data)  # load new data into existing employee
+#         if serializer.is_valid():  # check if new data is valid
+#             serializer.save()  # update employee in database
+#             return Response(serializer.data, status=status.HTTP_200_OK)  # send updated data back
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # send error response
+
+#     def delete(self, request, pk):  # handles DELETE request - remove employee
+#         employee = self.get_object(pk)  # reuse helper to fetch employee
+#         employee.delete()  # delete from database
+#         return Response(status=status.HTTP_204_NO_CONTENT)  # success, nothing to send back
 
 
-from django.http import Http404
 
-class EmployeeDetails(APIView):
-    def get_object(self, pk):
-        try:
-            return Employee.objects.get(pk = pk)
-        except Employee.DoesNotExist:
-            raise Http404
-        
-    def get(self, request, pk):
-        employee = self.get_object(pk)
-        serializer = EmployeeSerializer(employee)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+######### we comment clas base view to use mixins #####################
+
+from rest_framework import mixins, generics 
+from employees.models import Employee
+from .serializers import EmployeeSerializer
+
+class Employees(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+
+    def get(self, request):
+        return self.list(request)
+    
+    def post(self, request):
+        return self.create(request)
+    
+class EmployeeDetails(generics.GenericAPIView):
+    pass
