@@ -109,11 +109,24 @@ class Employees(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Generic
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
 
+    # getting all the object
     def get(self, request):
         return self.list(request)
     
+    # create the object
     def post(self, request):
         return self.create(request)
     
-class EmployeeDetails(generics.GenericAPIView):
-    pass
+class EmployeeDetails(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+
+    def get(self, request, pk):
+        return self.retrieve(request, pk)
+    
+    def put(self, request, pk):
+        return self.update(request, pk)
+
+    def delete(self, request, pk):
+        return self.destroy(request,pk)
+    
