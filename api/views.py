@@ -100,7 +100,7 @@ def studentDetailView(request, pk):  # pk = primary key (id of the student we wa
 
 
 ######### we comment clas base view to use mixins #####################
-
+"""
 from rest_framework import mixins, generics  # mixins = reusable chunks of common behavior (list, create, etc.)
 from employees.models import Employee
 from .serializers import EmployeeSerializer
@@ -130,4 +130,22 @@ class EmployeeDetails(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins
 
     def delete(self, request, pk):
         return self.destroy(request, pk)  # DestroyModelMixin gives us this - deletes employee
-    
+"""
+
+###################### Generic ########################
+from rest_framework import mixins, generics
+from employees.models import Employee
+from .serializers import EmployeeSerializer
+
+# class Employees(generics.ListAPIView, generics.CreateAPIView):  # alternative way - combining two generics manually
+class Employees(generics.ListCreateAPIView):  # built-in combo of List + Create, already merged for you
+    queryset = Employee.objects.all()  # data this view works with
+    serializer_class = EmployeeSerializer  # how to convert data to/from JSON
+    # no get()/post() needed - ListCreateAPIView already has them built in!
+
+# class EmployeeDetails(generics.RetrieveAPIView, generics.UpdateAPIView, generics.DestroyAPIView):  # alternative manual combo
+class EmployeeDetails(generics.RetrieveUpdateDestroyAPIView):  # built-in combo of Retrieve + Update + Destroy
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+    lookup_field = 'pk'  # tells DRF which field to use when looking up a single object (default is already 'pk', so this line is optional here)
+    # no get()/put()/delete() needed - all built in!
