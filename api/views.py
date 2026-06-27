@@ -101,32 +101,33 @@ def studentDetailView(request, pk):  # pk = primary key (id of the student we wa
 
 ######### we comment clas base view to use mixins #####################
 
-from rest_framework import mixins, generics 
+from rest_framework import mixins, generics  # mixins = reusable chunks of common behavior (list, create, etc.)
 from employees.models import Employee
 from .serializers import EmployeeSerializer
 
 class Employees(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
+    queryset = Employee.objects.all()  # tells DRF which records this view works with
+    serializer_class = EmployeeSerializer  # tells DRF which serializer to use
 
     # getting all the object
     def get(self, request):
-        return self.list(request)
-    
+        return self.list(request)  # ListModelMixin gives us this - returns all employees as JSON
+
     # create the object
     def post(self, request):
-        return self.create(request)
-    
+        return self.create(request)  # CreateModelMixin gives us this - validates + saves new employee
+
+
 class EmployeeDetails(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
 
     def get(self, request, pk):
-        return self.retrieve(request, pk)
-    
+        return self.retrieve(request, pk)  # RetrieveModelMixin gives us this - gets ONE employee by pk
+
     def put(self, request, pk):
-        return self.update(request, pk)
+        return self.update(request, pk)  # UpdateModelMixin gives us this - validates + updates employee
 
     def delete(self, request, pk):
-        return self.destroy(request,pk)
+        return self.destroy(request, pk)  # DestroyModelMixin gives us this - deletes employee
     
