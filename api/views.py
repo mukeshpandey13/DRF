@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from student.models import students
 from .serializers import StudentsSerializer
 from rest_framework import status
@@ -132,6 +132,8 @@ class EmployeeDetails(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins
         return self.destroy(request, pk)  # DestroyModelMixin gives us this - deletes employee
 """
 
+
+"""
 ###################### Generic ########################
 from rest_framework import mixins, generics
 from employees.models import Employee
@@ -149,3 +151,46 @@ class EmployeeDetails(generics.RetrieveUpdateDestroyAPIView):  # built-in combo 
     serializer_class = EmployeeSerializer
     lookup_field = 'pk'  # tells DRF which field to use when looking up a single object (default is already 'pk', so this line is optional here)
     # no get()/put()/delete() needed - all built in!
+
+"""
+
+
+######################## Generic ##################
+from rest_framework import mixins, generics, viewsets
+from employees.models import Employee
+from .serializers import EmployeeSerializer
+
+class EmployeeViewset(viewsets.ViewSet):  # ViewSet = combines ALL CRUD actions into ONE class
+
+    def list(self, request):  # handles GET /employees/ -> returns all employees
+        queryset = Employee.objects.all()  # get all employees from database
+        serializer = EmployeeSerializer(queryset, many=True)  # convert list to JSON
+        return Response(serializer.data)  # send JSON back
+
+    def create(self, request):  # handles POST /employees/ -> creates a new employee
+        serializer = EmployeeSerializer(data=request.data)  # load incoming data into serializer
+        if serializer.is_valid():  # check if data is correct/complete
+            serializer.save()  # save new employee to database
+            return Response(serializer.data, status=status.HTTP_201_CREATED)  # success response
+        return Response(serializer.errors)  # send back validation errors
+
+    def retrieve(self, request, pk=None):  # handles GET /employees/<pk>/ -> returns one employee
+        employee = get_object_or_404(Employee, pk=pk)  # find employee by pk, auto-404 if not found
+        serializer = EmployeeSerializer(employee)  # convert single employee to JSON
+        return Response(serializer.data, status=status.HTTP_200_OK)  # send data back
+
+    def update(self, request, pk):  # handles PUT /employees/<pk>/ -> updates one employee
+        employee = get_object_or_404(Employee, pk=pk)  # find employee by pk, auto-404 if not found
+        serializer = EmployeeSerializer(employee, data=request.data)  # load new data into existing employee
+        if serializer.is_valid():  # check if new data is valid
+            serializer.save()  # update employee in database
+            return Response(serializer.data, status=status.HTTP_200_OK)  # send updated data back
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # send error response
+
+    def destroy(self, request, pk=None):  # handles DELETE /employees/<pk>/ -> deletes one employee
+        employee = get_object_or_404(Employee, pk=pk)  # find employee by pk, auto-404 if not found
+        employee.delete()  # delete from database
+        return Response(
+            {"message": "Employee deleted successfully."},  # custom confirmation message
+            status=status.HTTP_204_NO_CONTENT
+        )
