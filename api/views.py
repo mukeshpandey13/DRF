@@ -204,3 +204,19 @@ class EmployeeViewset(viewsets.ModelViewSet):  # gives you ALL 5 actions (list, 
     queryset = Employee.objects.all()  # data this viewset works with
     serializer_class = EmployeeSerializer  # how to convert data to/from JSON
     # no list()/create()/retrieve()/update()/destroy() needed - all built in!
+
+
+
+
+#################### Blog and comments #########################
+
+from blogs.models import Blog, Comment
+from blogs.serializers import BlogSerializer, CommentSerializer
+
+class BlogsView(generics.ListCreateAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+
+class CommentsView(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
