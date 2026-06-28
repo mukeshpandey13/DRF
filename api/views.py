@@ -154,7 +154,7 @@ class EmployeeDetails(generics.RetrieveUpdateDestroyAPIView):  # built-in combo 
 
 """
 
-
+"""
 ######################## Generic ##################
 from rest_framework import mixins, generics, viewsets
 from employees.models import Employee
@@ -194,3 +194,13 @@ class EmployeeViewset(viewsets.ViewSet):  # ViewSet = combines ALL CRUD actions 
             {"message": "Employee deleted successfully."},  # custom confirmation message
             status=status.HTTP_204_NO_CONTENT
         )
+"""
+
+from rest_framework import mixins, generics, viewsets
+from employees.models import Employee
+from .serializers import EmployeeSerializer
+
+class EmployeeViewset(viewsets.ModelViewSet):  # gives you ALL 5 actions (list, create, retrieve, update, destroy) for free
+    queryset = Employee.objects.all()  # data this viewset works with
+    serializer_class = EmployeeSerializer  # how to convert data to/from JSON
+    # no list()/create()/retrieve()/update()/destroy() needed - all built in!
