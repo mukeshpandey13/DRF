@@ -8,6 +8,8 @@ class EmployeeFilter(django_filters.FilterSet):
         lookup_expr='iexact'
     )
 
+    emp_name = django_filters.CharFilter(field_name='emp_name', lookup_expr='icontains')
+
     class Meta:
         model = Employee
-        fields = ['designation']
+        fields = ['designation','emp_name']
