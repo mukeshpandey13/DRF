@@ -232,7 +232,8 @@ class BlogsView(generics.ListCreateAPIView):
 
     # search filter
     filter_backends = [SearchFilter]
-    search_fields = ['blog_title','blog_body']
+    # search_fields = ['blog_title','blog_body']
+    search_fields = ['^blog_title']
 
 class CommentsView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
