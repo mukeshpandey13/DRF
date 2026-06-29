@@ -199,11 +199,15 @@ class EmployeeViewset(viewsets.ViewSet):  # ViewSet = combines ALL CRUD actions 
 from rest_framework import mixins, generics, viewsets
 from employees.models import Employee
 from .serializers import EmployeeSerializer
+from .paginations import CustomPagination
 
 class EmployeeViewset(viewsets.ModelViewSet):  # gives you ALL 5 actions (list, create, retrieve, update, destroy) for free
+
     queryset = Employee.objects.all()  # data this viewset works with
     serializer_class = EmployeeSerializer  # how to convert data to/from JSON
     # no list()/create()/retrieve()/update()/destroy() needed - all built in!
+
+    pagination_class = CustomPagination
 
 
 
