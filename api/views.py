@@ -207,7 +207,11 @@ class EmployeeViewset(viewsets.ModelViewSet):  # gives you ALL 5 actions (list, 
     serializer_class = EmployeeSerializer  # how to convert data to/from JSON
     # no list()/create()/retrieve()/update()/destroy() needed - all built in!
 
+    # Pagination 
     pagination_class = CustomPagination
+
+    # Filtering 
+    filterset_fields = ['designation']
 
 
 
