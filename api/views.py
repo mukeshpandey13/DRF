@@ -200,6 +200,7 @@ from rest_framework import mixins, generics, viewsets
 from employees.models import Employee
 from .serializers import EmployeeSerializer
 from .paginations import CustomPagination
+from employees.filters import EmployeeFilter
 
 class EmployeeViewset(viewsets.ModelViewSet):  # gives you ALL 5 actions (list, create, retrieve, update, destroy) for free
 
@@ -211,7 +212,10 @@ class EmployeeViewset(viewsets.ModelViewSet):  # gives you ALL 5 actions (list, 
     pagination_class = CustomPagination
 
     # Filtering 
-    filterset_fields = ['designation']
+    # filterset_fields = ['designation']
+
+    # customing filtering
+    filterset_class = EmployeeFilter
 
 
 
