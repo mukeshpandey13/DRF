@@ -224,10 +224,15 @@ class EmployeeViewset(viewsets.ModelViewSet):  # gives you ALL 5 actions (list, 
 
 from blogs.models import Blog, Comment
 from blogs.serializers import BlogSerializer, CommentSerializer
+from rest_framework.filters import SearchFilter
 
 class BlogsView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+
+    # search filter
+    filter_backends = [SearchFilter]
+    search_fields = ['blog_title']
 
 class CommentsView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
